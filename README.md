@@ -6,11 +6,6 @@
   <a href="https://mulakhas.lovable.app"><strong>Live demo →</strong></a>
 </p>
 
-<p align="center">
-  <img src="docs/screenshots/hero-en.png" alt="Mulakhas — English UI" width="49%" />
-  <img src="docs/screenshots/hero-ar.png" alt="ملخّص — Arabic RTL UI" width="49%" />
-</p>
-
 ---
 
 ## Highlights
