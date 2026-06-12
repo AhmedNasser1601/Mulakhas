@@ -453,8 +453,14 @@ function Index() {
           </Card>
         )}
 
-        <footer className="text-center text-xs text-muted-foreground pt-4 space-y-1">
-          <p>{t.footer}</p>
+        <footer className="text-center text-xs text-muted-foreground pt-6 pb-2 space-y-2 border-t border-border/50 mt-8">
+          <div className="flex items-center justify-center gap-2 flex-wrap text-foreground/80">
+            <Sparkles className="w-3.5 h-3.5 text-primary" />
+            <span className="font-medium">{t.appTitle}</span>
+            <span className="opacity-50">·</span>
+            <span>{t.tagline}</span>
+          </div>
+          <p className="opacity-80">{t.footer}</p>
           <p>
             {lang === "ar" ? "تطوير: " : "Developed by: "}
             <a
@@ -463,8 +469,9 @@ function Index() {
               rel="noopener noreferrer"
               className="font-semibold text-primary hover:underline"
             >
-              Ahmed Nasser
+              {lang === "ar" ? "أحمد ناصر" : "Ahmed Nasser"}
             </a>
+            <span className="opacity-60"> · © {new Date().getFullYear()}</span>
           </p>
         </footer>
       </div>
