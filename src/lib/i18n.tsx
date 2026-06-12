@@ -5,7 +5,7 @@ export type Lang = "ar" | "en";
 type Dict = {
   appTitle: string; tagline: string; originalText: string; uploadImage: string;
   read: string; stop: string; placeholder: string; chars: string; clear: string;
-  short: string; long: string; resultShort: string; resultLong: string;
+  result: string;
   copy: string; copied: string; footer: string; enterTextFirst: string;
   fileTooLarge: string; noTextFound: string; extracted: string;
   extractFailed: string; unknownError: string; noSpeech: string;
@@ -14,6 +14,9 @@ type Dict = {
   fromUrl: string; urlPrompt: string; invalidUrl: string;
   history: string; noHistory: string; clearHistory: string; restore: string; delete: string;
   uploadFile: string; fileHint: string;
+  summarize: string; outputLanguage: string; selectLanguage: string;
+  minChars: string; maxChars: string; rangeHint: string; invalidRange: string;
+  selectLangFirst: string;
 };
 
 const translations: Record<"ar" | "en", Dict> = {
