@@ -17,6 +17,7 @@ type Dict = {
   summarize: string; outputLanguage: string; selectLanguage: string;
   minChars: string; maxChars: string; rangeHint: string; invalidRange: string;
   selectLangFirst: string;
+  voiceInput: string; listening: string; noRecognition: string; micDenied: string;
 };
 
 const translations: Record<"ar" | "en", Dict> = {
