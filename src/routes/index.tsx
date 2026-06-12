@@ -276,7 +276,10 @@ function Index() {
     <div dir={dir} className="min-h-screen px-4 py-8 sm:px-6 sm:py-12">
       <Toaster position="top-center" dir={dir} />
       <div className="mx-auto max-w-4xl space-y-8">
-        <div className="flex items-center justify-between gap-2">
+        <div
+          dir={lang === "ar" ? "ltr" : "rtl"}
+          className="flex items-center justify-between gap-2"
+        >
           <Button variant="outline" size="sm" onClick={() => setShowHistory(true)} aria-label="History">
             <History className="w-4 h-4" />
             <span className={space}>{t.history}</span>
