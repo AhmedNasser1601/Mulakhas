@@ -4,7 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import {
   Loader2, Upload, Volume2, Square, Copy, Sparkles, FileText, Languages,
   Share2, FileDown, Link as LinkIcon, History, Trash2, RotateCcw, X,
-  Sun, Moon, Plus, Minus,
+  Sun, Moon, Plus, Minus, Mic, MicOff,
 } from "lucide-react";
 import { toast } from "sonner";
 import jsPDF from "jspdf";
@@ -110,6 +110,8 @@ function Index() {
   const [speaking, setSpeaking] = useState(false);
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [showHistory, setShowHistory] = useState(false);
+  const [listening, setListening] = useState(false);
+  const recognitionRef = useRef<any>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -200,6 +202,51 @@ function Index() {
       toast.error(e instanceof Error ? e.message : t.extractFailed);
     } finally {
       setLoading(null);
+    }
+  };
+
+  const toggleVoice = () => {
+    if (typeof window === "undefined") return;
+    const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SR) { toast.error(t.noRecognition); return; }
+    if (listening) {
+      recognitionRef.current?.stop();
+      return;
+    }
+    const rec = new SR();
+    rec.lang = lang === "ar" ? "ar-SA" : "en-US";
+    rec.continuous = true;
+    rec.interimResults = true;
+    let finalBuffer = "";
+    rec.onresult = (e: any) => {
+      let interim = "";
+      let finalChunk = "";
+      for (let i = e.resultIndex; i < e.results.length; i++) {
+        const r = e.results[i];
+        if (r.isFinal) finalChunk += r[0].transcript;
+        else interim += r[0].transcript;
+      }
+      if (finalChunk) {
+        finalBuffer += finalChunk;
+        setText((prev) => (prev ? prev + " " : "") + finalChunk);
+      }
+      void interim;
+    };
+    rec.onerror = (e: any) => {
+      if (e.error === "not-allowed" || e.error === "service-not-allowed") toast.error(t.micDenied);
+      else if (e.error !== "no-speech" && e.error !== "aborted") toast.error(t.unknownError);
+      setListening(false);
+    };
+    rec.onend = () => {
+      setListening(false);
+      if (finalBuffer.trim()) toast.success(t.extracted);
+    };
+    try {
+      rec.start();
+      recognitionRef.current = rec;
+      setListening(true);
+    } catch {
+      toast.error(t.unknownError);
     }
   };
 
@@ -337,6 +384,17 @@ function Index() {
               <Button variant="outline" size="sm" onClick={handleUrl} disabled={loading === "url"}>
                 {loading === "url" ? <Loader2 className="w-4 h-4 animate-spin" /> : <LinkIcon className="w-4 h-4" />}
                 <span className={space}>{t.fromUrl}</span>
+              </Button>
+              <Button
+                variant={listening ? "default" : "outline"}
+                size="sm"
+                onClick={toggleVoice}
+                aria-label={t.voiceInput}
+                title={t.voiceInput}
+                className={listening ? "animate-pulse" : ""}
+              >
+                {listening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+                <span className={space}>{listening ? t.listening : t.voiceInput}</span>
               </Button>
               <Button variant="ghost" size="sm" onClick={() => speak(text)} disabled={!text.trim()}>
                 {speaking ? <Square className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}

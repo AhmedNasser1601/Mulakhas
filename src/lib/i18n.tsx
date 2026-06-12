@@ -17,6 +17,7 @@ type Dict = {
   summarize: string; outputLanguage: string; selectLanguage: string;
   minChars: string; maxChars: string; rangeHint: string; invalidRange: string;
   selectLangFirst: string;
+  voiceInput: string; listening: string; noRecognition: string; micDenied: string;
 };
 
 const translations: Record<"ar" | "en", Dict> = {
@@ -67,6 +68,10 @@ const translations: Record<"ar" | "en", Dict> = {
     rangeHint: "عدد الأحرف",
     invalidRange: "الحد الأقصى يجب أن يكون أكبر من الأدنى",
     selectLangFirst: "اختر لغة الإخراج أولاً",
+    voiceInput: "إدخال صوتي",
+    listening: "جارٍ الاستماع...",
+    noRecognition: "متصفحك لا يدعم الإدخال الصوتي",
+    micDenied: "تم رفض إذن الميكروفون",
   },
   en: {
     appTitle: "Mulakhas",
@@ -115,6 +120,10 @@ const translations: Record<"ar" | "en", Dict> = {
     rangeHint: "Character range",
     invalidRange: "Max must be greater than Min",
     selectLangFirst: "Select an output language first",
+    voiceInput: "Voice input",
+    listening: "Listening...",
+    noRecognition: "Your browser does not support voice input",
+    micDenied: "Microphone permission denied",
   },
 };
 
