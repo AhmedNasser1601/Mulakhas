@@ -103,5 +103,7 @@ This project is built and hosted with [Lovable](https://lovable.dev), with bidir
 
 ## Credits
 
-Developed by [Ahmed Nasser](https://github.com/ahmednasser).
+Designed and developed by [**Ahmed Nasser**](https://github.com/ahmednasser1601) — frontend, backend server functions, and bilingual (AR / EN) RTL design.
+
+Built with [Lovable](https://lovable.dev).
 
