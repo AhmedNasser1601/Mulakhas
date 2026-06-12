@@ -77,8 +77,6 @@ const translations: Record<"ar" | "en", Dict> = {
     placeholder: "Paste text, upload an image/PDF, or enter a URL to extract text...",
     chars: "chars",
     clear: "Clear",
-    short: "Short (≤200 chars)",
-    long: "Long (300–500 chars)",
     result: "Result",
     copy: "Copy",
     copied: "Copied",
