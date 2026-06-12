@@ -3,7 +3,7 @@ import { createContext, useContext, useEffect, useState, ReactNode } from "react
 export type Lang = "ar" | "en";
 
 type Dict = {
-  appTitle: string; tagline: string; originalText: string; uploadImage: string;
+  appTitle: string; tagline: string; taglineShort: string; originalText: string; uploadImage: string;
   read: string; stop: string; placeholder: string; chars: string; clear: string;
   result: string;
   copy: string; copied: string; footer: string; enterTextFirst: string;
@@ -22,7 +22,8 @@ type Dict = {
 const translations: Record<"ar" | "en", Dict> = {
   ar: {
     appTitle: "ملخّص",
-    tagline: "أداة ذكية لتلخيص وإعادة صياغة النصوص العربية، قراءتها، واستخراجها من الصور وملفات PDF.",
+    tagline: "أداة ذكية لتلخيص النصوص وإعادة صياغتها، قراءتها، واستخراجها من الصور وملفات PDF بأي لغة.",
+    taglineShort: "تلخيص ذكي بأي لغة.",
     originalText: "النص الأصلي",
     uploadImage: "رفع ملف",
     read: "قراءة",
@@ -69,7 +70,8 @@ const translations: Record<"ar" | "en", Dict> = {
   },
   en: {
     appTitle: "Mulakhas",
-    tagline: "Smart tool to summarize, paraphrase, read aloud, and extract text from images or PDFs.",
+    tagline: "Smart tool to summarize, paraphrase, read aloud, and extract text from images or PDFs in any language.",
+    taglineShort: "Smart summarization in any language.",
     originalText: "Original Text",
     uploadImage: "Upload File",
     read: "Read",

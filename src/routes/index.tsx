@@ -454,11 +454,11 @@ function Index() {
         )}
 
         <footer className="text-center text-xs text-muted-foreground pt-6 pb-2 space-y-2 border-t border-border/50 mt-8">
-          <div className="flex items-center justify-center gap-2 flex-wrap text-foreground/80">
-            <Sparkles className="w-3.5 h-3.5 text-primary" />
+          <div className="flex items-center justify-center gap-2 text-foreground/80 whitespace-nowrap overflow-hidden text-ellipsis">
+            <Sparkles className="w-3.5 h-3.5 text-primary shrink-0" />
             <span className="font-medium">{t.appTitle}</span>
             <span className="opacity-50">·</span>
-            <span>{t.tagline}</span>
+            <span className="truncate">{t.taglineShort}</span>
           </div>
           <p>
             {lang === "ar" ? "تطوير: " : "Developed by: "}
