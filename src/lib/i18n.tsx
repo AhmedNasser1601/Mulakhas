@@ -70,7 +70,8 @@ const translations: Record<"ar" | "en", Dict> = {
   },
   en: {
     appTitle: "Mulakhas",
-    tagline: "Smart tool to summarize, paraphrase, read aloud, and extract text from images or PDFs.",
+    tagline: "Smart tool to summarize, paraphrase, read aloud, and extract text from images or PDFs in any language.",
+    taglineShort: "Smart summarization in any language.",
     originalText: "Original Text",
     uploadImage: "Upload File",
     read: "Read",
