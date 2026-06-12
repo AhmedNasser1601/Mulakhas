@@ -4,7 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import {
   Loader2, Upload, Volume2, Square, Copy, Sparkles, FileText, Languages,
   Share2, FileDown, Link as LinkIcon, History, Trash2, RotateCcw, X,
-  Sun, Moon,
+  Sun, Moon, Plus, Minus,
 } from "lucide-react";
 import { toast } from "sonner";
 import jsPDF from "jspdf";
@@ -12,8 +12,7 @@ import jsPDF from "jspdf";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
-
-import { Slider } from "@/components/ui/slider";
+import { Input } from "@/components/ui/input";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
