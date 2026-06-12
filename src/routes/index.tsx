@@ -375,21 +375,6 @@ function Index() {
           </div>
 
           <div className="mt-5 space-y-2">
-            <div className="flex items-center justify-between gap-3 flex-wrap">
-              <label className="text-xs font-medium text-muted-foreground">
-                {t.rangeHint}
-              </label>
-              <div className="text-xs tabular-nums flex items-center gap-2">
-                <span className="rounded-md bg-secondary text-secondary-foreground px-2 py-0.5">
-                  {t.minChars} <span className="font-semibold text-foreground">{minChars}</span>
-                </span>
-                <span className="text-muted-foreground">—</span>
-                <span className="rounded-md bg-secondary text-secondary-foreground px-2 py-0.5">
-                  {t.maxChars} <span className="font-semibold text-foreground">{maxChars}</span>
-                </span>
-                <span className="text-muted-foreground">{t.chars}</span>
-              </div>
-            </div>
             <div className="flex items-center gap-3" dir="ltr">
               <span className="text-[10px] text-muted-foreground tabular-nums w-8 text-right">{MIN_BOUND}</span>
               <Slider
