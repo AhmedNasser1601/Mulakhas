@@ -4,6 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import {
   Loader2, Upload, Volume2, Square, Copy, Sparkles, FileText, Languages,
   Share2, FileDown, Link as LinkIcon, History, Trash2, RotateCcw, X, Plus, Minus,
+  Sun, Moon,
 } from "lucide-react";
 import { toast } from "sonner";
 import jsPDF from "jspdf";
