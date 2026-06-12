@@ -101,6 +101,10 @@
     border-color: var(--color-border);
   }
 
+  html {
+    background: var(--color-background);
+  }
+
   body {
     background: var(--gradient-surface);
     color: var(--color-foreground);
