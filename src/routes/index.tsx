@@ -218,19 +218,20 @@ function Index() {
     rec.continuous = true;
     rec.interimResults = true;
     let finalBuffer = "";
+    let lastCommittedIndex = -1;
     rec.onresult = (e: any) => {
-      let interim = "";
       let finalChunk = "";
-      for (let i = e.resultIndex; i < e.results.length; i++) {
+      for (let i = 0; i < e.results.length; i++) {
         const r = e.results[i];
-        if (r.isFinal) finalChunk += r[0].transcript;
-        else interim += r[0].transcript;
+        if (r.isFinal && i > lastCommittedIndex) {
+          finalChunk += r[0].transcript;
+          lastCommittedIndex = i;
+        }
       }
       if (finalChunk) {
         finalBuffer += finalChunk;
-        setText((prev) => (prev ? prev + " " : "") + finalChunk);
+        setText((prev) => (prev ? prev + " " : "") + finalChunk.trim());
       }
-      void interim;
     };
     rec.onerror = (e: any) => {
       if (e.error === "not-allowed" || e.error === "service-not-allowed") toast.error(t.micDenied);
