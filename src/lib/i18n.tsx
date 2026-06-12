@@ -120,6 +120,10 @@ const translations: Record<"ar" | "en", Dict> = {
     rangeHint: "Character range",
     invalidRange: "Max must be greater than Min",
     selectLangFirst: "Select an output language first",
+    voiceInput: "Voice input",
+    listening: "Listening...",
+    noRecognition: "Your browser does not support voice input",
+    micDenied: "Microphone permission denied",
   },
 };
 
