@@ -205,6 +205,51 @@ function Index() {
     }
   };
 
+  const toggleVoice = () => {
+    if (typeof window === "undefined") return;
+    const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SR) { toast.error(t.noRecognition); return; }
+    if (listening) {
+      recognitionRef.current?.stop();
+      return;
+    }
+    const rec = new SR();
+    rec.lang = lang === "ar" ? "ar-SA" : "en-US";
+    rec.continuous = true;
+    rec.interimResults = true;
+    let finalBuffer = "";
+    rec.onresult = (e: any) => {
+      let interim = "";
+      let finalChunk = "";
+      for (let i = e.resultIndex; i < e.results.length; i++) {
+        const r = e.results[i];
+        if (r.isFinal) finalChunk += r[0].transcript;
+        else interim += r[0].transcript;
+      }
+      if (finalChunk) {
+        finalBuffer += finalChunk;
+        setText((prev) => (prev ? prev + " " : "") + finalChunk);
+      }
+      void interim;
+    };
+    rec.onerror = (e: any) => {
+      if (e.error === "not-allowed" || e.error === "service-not-allowed") toast.error(t.micDenied);
+      else if (e.error !== "no-speech" && e.error !== "aborted") toast.error(t.unknownError);
+      setListening(false);
+    };
+    rec.onend = () => {
+      setListening(false);
+      if (finalBuffer.trim()) toast.success(t.extracted);
+    };
+    try {
+      rec.start();
+      recognitionRef.current = rec;
+      setListening(true);
+    } catch {
+      toast.error(t.unknownError);
+    }
+  };
+
   const speak = (content: string) => {
     if (typeof window === "undefined" || !("speechSynthesis" in window)) {
       toast.error(t.noSpeech); return;
