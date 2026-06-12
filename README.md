@@ -103,13 +103,5 @@ This project is built and hosted with [Lovable](https://lovable.dev), with bidir
 
 ## Credits
 
-Designed and developed by **Ahmed Nasser · أحمد ناصر**.
-
-- Idea, UX, bilingual (AR / EN) copy and RTL design
-- Frontend (TanStack Start, Tailwind v4, shadcn/ui)
-- Backend server functions on Lovable Cloud, powered by the Lovable AI Gateway
-
-Built with [Lovable](https://lovable.dev) · UI primitives from [shadcn/ui](https://ui.shadcn.com/) and [Radix](https://www.radix-ui.com/) · icons from [Lucide](https://lucide.dev/).
-
-If you find Mulakhas useful, a ⭐ on the repo is appreciated.
+Developed by [Ahmed Nasser](https://github.com/ahmednasser).
 
