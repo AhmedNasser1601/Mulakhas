@@ -3,6 +3,7 @@ import { z } from "zod";
 
 const GATEWAY_URL = "https://ai.gateway.lovable.dev/v1/chat/completions";
 const MODEL = "google/gemini-3-flash-preview";
+const MAX_BYTES = 5 * 1024 * 1024;
 
 async function callGateway(body: unknown) {
   const key = process.env.LOVABLE_API_KEY;
@@ -56,29 +57,57 @@ export const summarizeArabic = createServerFn({ method: "POST" })
     return { result: content.length > limit ? content.slice(0, limit) : content };
   });
 
+function buildExtractMessage(mime: string, dataUrl: string) {
+  const isPdf = mime === "application/pdf";
+  const block = isPdf
+    ? { type: "file", file: { filename: "document.pdf", file_data: dataUrl } }
+    : { type: "image_url", image_url: { url: dataUrl } };
+  return {
+    model: MODEL,
+    messages: [
+      {
+        role: "system",
+        content:
+          "You are an OCR/text extraction tool. Extract all text from the provided file as-is, preserving the original language (Arabic or English). Return only the extracted text with no commentary. If no text, return an empty string.",
+      },
+      {
+        role: "user",
+        content: [
+          { type: "text", text: "Extract all text from this file." },
+          block,
+        ],
+      },
+    ],
+  };
+}
+
 export const extractTextFromImage = createServerFn({ method: "POST" })
   .inputValidator(
     z.object({
-      imageDataUrl: z.string().startsWith("data:image/"),
+      dataUrl: z.string().startsWith("data:"),
+      mime: z.string(),
     }),
   )
   .handler(async ({ data }) => {
-    const content = await callGateway({
-      model: MODEL,
-      messages: [
-        {
-          role: "system",
-          content:
-            "أنت أداة استخراج نصوص (OCR). استخرج النص العربي من الصورة وأعده كما هو بدون أي شرح أو تعليق. إذا لم يكن هناك نص، أعد سلسلة فارغة.",
-        },
-        {
-          role: "user",
-          content: [
-            { type: "text", text: "استخرج كل النص الموجود في هذه الصورة." },
-            { type: "image_url", image_url: { url: data.imageDataUrl } },
-          ],
-        },
-      ],
-    });
+    const content = await callGateway(buildExtractMessage(data.mime, data.dataUrl));
+    return { text: content };
+  });
+
+export const extractTextFromUrl = createServerFn({ method: "POST" })
+  .inputValidator(z.object({ url: z.string().url() }))
+  .handler(async ({ data }) => {
+    const res = await fetch(data.url);
+    if (!res.ok) throw new Error(`Failed to fetch URL: ${res.status}`);
+    const mime = (res.headers.get("content-type") || "").split(";")[0].trim();
+    if (!mime.startsWith("image/") && mime !== "application/pdf") {
+      throw new Error("URL must point to an image or PDF");
+    }
+    const buf = new Uint8Array(await res.arrayBuffer());
+    if (buf.byteLength > MAX_BYTES) throw new Error("File exceeds 5MB limit");
+    let bin = "";
+    for (let i = 0; i < buf.length; i++) bin += String.fromCharCode(buf[i]);
+    const b64 = btoa(bin);
+    const dataUrl = `data:${mime};base64,${b64}`;
+    const content = await callGateway(buildExtractMessage(mime, dataUrl));
     return { text: content };
   });

@@ -7,20 +7,24 @@ type Dict = {
   read: string; stop: string; placeholder: string; chars: string; clear: string;
   short: string; long: string; resultShort: string; resultLong: string;
   copy: string; copied: string; footer: string; enterTextFirst: string;
-  imageTooLarge: string; noTextFound: string; extracted: string;
+  fileTooLarge: string; noTextFound: string; extracted: string;
   extractFailed: string; unknownError: string; noSpeech: string;
   retry: string; error: string; langToggle: string;
+  share: string; shareFailed: string; exportPdf: string; pdfReady: string;
+  fromUrl: string; urlPrompt: string; invalidUrl: string;
+  history: string; noHistory: string; clearHistory: string; restore: string; delete: string;
+  uploadFile: string; fileHint: string;
 };
 
 const translations: Record<"ar" | "en", Dict> = {
   ar: {
     appTitle: "ملخّص",
-    tagline: "أداة ذكية لتلخيص وإعادة صياغة النصوص العربية، قراءتها، واستخراجها من الصور.",
+    tagline: "أداة ذكية لتلخيص وإعادة صياغة النصوص العربية، قراءتها، واستخراجها من الصور وملفات PDF.",
     originalText: "النص الأصلي",
-    uploadImage: "رفع صورة",
+    uploadImage: "رفع ملف",
     read: "قراءة",
     stop: "إيقاف",
-    placeholder: "ألصق النص هنا أو ارفع صورة لاستخراج النص منها...",
+    placeholder: "ألصق النص هنا أو ارفع صورة/PDF أو أدخل رابطاً لاستخراج النص...",
     chars: "حرف",
     clear: "مسح",
     short: "قصير (≤200 حرف)",
@@ -31,24 +35,38 @@ const translations: Record<"ar" | "en", Dict> = {
     copied: "تم النسخ",
     footer: "يعمل على الويب، الجوال، وأنظمة سطح المكتب.",
     enterTextFirst: "الرجاء إدخال نص أولاً",
-    imageTooLarge: "حجم الصورة كبير جداً (الحد 8MB)",
-    noTextFound: "لم يتم العثور على نص في الصورة",
-    extracted: "تم استخراج النص من الصورة",
+    fileTooLarge: "حجم الملف كبير جداً (الحد 5MB)",
+    noTextFound: "لم يتم العثور على نص",
+    extracted: "تم استخراج النص",
     extractFailed: "فشل استخراج النص",
     unknownError: "خطأ غير معروف",
     noSpeech: "متصفحك لا يدعم قراءة النص",
     retry: "إعادة المحاولة",
     error: "حدث خطأ",
     langToggle: "EN",
+    share: "مشاركة",
+    shareFailed: "تعذرت المشاركة",
+    exportPdf: "تصدير PDF",
+    pdfReady: "تم تصدير الملف",
+    fromUrl: "من رابط",
+    urlPrompt: "أدخل رابط صورة أو PDF",
+    invalidUrl: "رابط غير صالح",
+    history: "السجل",
+    noHistory: "لا يوجد سجل بعد",
+    clearHistory: "مسح السجل",
+    restore: "استرجاع",
+    delete: "حذف",
+    uploadFile: "رفع صورة أو PDF",
+    fileHint: "صورة أو PDF (حد أقصى 5MB)",
   },
   en: {
     appTitle: "Mulakhas",
-    tagline: "Smart tool to summarize, paraphrase, read aloud, and OCR text from images.",
+    tagline: "Smart tool to summarize, paraphrase, read aloud, and extract text from images or PDFs.",
     originalText: "Original Text",
-    uploadImage: "Upload Image",
+    uploadImage: "Upload File",
     read: "Read",
     stop: "Stop",
-    placeholder: "Paste your text here or upload an image to extract text...",
+    placeholder: "Paste text, upload an image/PDF, or enter a URL to extract text...",
     chars: "chars",
     clear: "Clear",
     short: "Short (≤200 chars)",
@@ -59,15 +77,29 @@ const translations: Record<"ar" | "en", Dict> = {
     copied: "Copied",
     footer: "Works on Web, Mobile, and Desktop.",
     enterTextFirst: "Please enter some text first",
-    imageTooLarge: "Image is too large (max 8MB)",
-    noTextFound: "No text found in the image",
-    extracted: "Text extracted from image",
+    fileTooLarge: "File is too large (max 5MB)",
+    noTextFound: "No text found",
+    extracted: "Text extracted",
     extractFailed: "Failed to extract text",
     unknownError: "Unknown error",
     noSpeech: "Your browser does not support speech",
     retry: "Try again",
     error: "An error occurred",
     langToggle: "ع",
+    share: "Share",
+    shareFailed: "Could not share",
+    exportPdf: "Export PDF",
+    pdfReady: "PDF exported",
+    fromUrl: "From URL",
+    urlPrompt: "Enter image or PDF URL",
+    invalidUrl: "Invalid URL",
+    history: "History",
+    noHistory: "No history yet",
+    clearHistory: "Clear history",
+    restore: "Restore",
+    delete: "Delete",
+    uploadFile: "Upload image or PDF",
+    fileHint: "Image or PDF (max 5MB)",
   },
 };
 
