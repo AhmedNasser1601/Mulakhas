@@ -102,6 +102,27 @@ const mergeVoiceText = (base: string, spoken: string) => {
   return `${trimmedBase} ${trimmedSpoken}`;
 };
 
+const mergeOverlappingSpeech = (current: string, next: string) => {
+  const currentWords = current.trim().split(/\s+/).filter(Boolean);
+  const nextWords = next.trim().split(/\s+/).filter(Boolean);
+  if (!currentWords.length) return nextWords.join(" ");
+  if (!nextWords.length) return currentWords.join(" ");
+
+  const maxOverlap = Math.min(currentWords.length, nextWords.length);
+  for (let size = maxOverlap; size > 0; size -= 1) {
+    const currentTail = currentWords.slice(-size).join(" ");
+    const nextHead = nextWords.slice(0, size).join(" ");
+    if (currentTail === nextHead) {
+      return [...currentWords, ...nextWords.slice(size)].join(" ");
+    }
+  }
+
+  return [...currentWords, ...nextWords].join(" ");
+};
+
+const combineSpeechSegments = (segments: string[]) =>
+  segments.reduce((combined, segment) => mergeOverlappingSpeech(combined, segment), "");
+
 function Index() {
   const summarize = useServerFn(summarizeArabic);
   const ocr = useServerFn(extractTextFromImage);
@@ -230,16 +251,19 @@ function Index() {
     voiceBaseTextRef.current = text;
     voiceFinalTextRef.current = "";
     rec.onresult = (e: any) => {
-      let finalTranscript = "";
-      let interimTranscript = "";
+      const finalSegments: string[] = [];
+      const interimSegments: string[] = [];
       for (let i = 0; i < e.results.length; i++) {
         const r = e.results[i];
         const transcript = r[0]?.transcript ?? "";
-        if (r.isFinal) finalTranscript += transcript;
-        else interimTranscript += transcript;
+        if (r.isFinal) finalSegments.push(transcript);
+        else interimSegments.push(transcript);
       }
+      const finalTranscript = combineSpeechSegments(finalSegments);
+      const interimTranscript = combineSpeechSegments(interimSegments);
+      const spokenTranscript = mergeOverlappingSpeech(finalTranscript, interimTranscript);
       voiceFinalTextRef.current = finalTranscript.trim();
-      setText(mergeVoiceText(voiceBaseTextRef.current, `${finalTranscript} ${interimTranscript}`));
+      setText(mergeVoiceText(voiceBaseTextRef.current, spokenTranscript));
     };
     rec.onerror = (e: any) => {
       if (e.error === "not-allowed" || e.error === "service-not-allowed") toast.error(t.micDenied);
