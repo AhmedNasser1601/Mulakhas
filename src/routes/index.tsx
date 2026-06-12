@@ -98,6 +98,7 @@ function Index() {
   const ocr = useServerFn(extractTextFromImage);
   const ocrUrl = useServerFn(extractTextFromUrl);
   const { t, lang, toggle, dir } = useI18n();
+  const { theme, toggle: toggleTheme } = useTheme();
 
   const [text, setText] = useState("");
   const [result, setResult] = useState("");
