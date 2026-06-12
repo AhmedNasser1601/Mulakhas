@@ -103,6 +103,8 @@
 
   html {
     background: var(--color-background);
+    overflow-y: scroll;
+    scrollbar-gutter: stable;
   }
 
   body {
@@ -110,5 +112,6 @@
     color: var(--color-foreground);
     font-family: var(--font-arabic);
     min-height: 100vh;
+    overflow-x: hidden;
   }
 }
