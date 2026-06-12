@@ -5,7 +5,7 @@ export type Lang = "ar" | "en";
 type Dict = {
   appTitle: string; tagline: string; originalText: string; uploadImage: string;
   read: string; stop: string; placeholder: string; chars: string; clear: string;
-  short: string; long: string; resultShort: string; resultLong: string;
+  result: string;
   copy: string; copied: string; footer: string; enterTextFirst: string;
   fileTooLarge: string; noTextFound: string; extracted: string;
   extractFailed: string; unknownError: string; noSpeech: string;
@@ -14,6 +14,9 @@ type Dict = {
   fromUrl: string; urlPrompt: string; invalidUrl: string;
   history: string; noHistory: string; clearHistory: string; restore: string; delete: string;
   uploadFile: string; fileHint: string;
+  summarize: string; outputLanguage: string; selectLanguage: string;
+  minChars: string; maxChars: string; rangeHint: string; invalidRange: string;
+  selectLangFirst: string;
 };
 
 const translations: Record<"ar" | "en", Dict> = {
@@ -27,10 +30,7 @@ const translations: Record<"ar" | "en", Dict> = {
     placeholder: "ألصق النص هنا أو ارفع صورة/PDF أو أدخل رابطاً لاستخراج النص...",
     chars: "حرف",
     clear: "مسح",
-    short: "قصير (≤200 حرف)",
-    long: "طويل (300–500 حرف)",
-    resultShort: "النتيجة (قصيرة)",
-    resultLong: "النتيجة (طويلة)",
+    result: "النتيجة",
     copy: "نسخ",
     copied: "تم النسخ",
     footer: "يعمل على الويب، الجوال، وأنظمة سطح المكتب.",
@@ -58,6 +58,14 @@ const translations: Record<"ar" | "en", Dict> = {
     delete: "حذف",
     uploadFile: "رفع صورة أو PDF",
     fileHint: "صورة أو PDF (حد أقصى 5MB)",
+    summarize: "تلخيص",
+    outputLanguage: "لغة الإخراج",
+    selectLanguage: "اختر اللغة",
+    minChars: "الحد الأدنى",
+    maxChars: "الحد الأقصى",
+    rangeHint: "عدد الأحرف",
+    invalidRange: "الحد الأقصى يجب أن يكون أكبر من الأدنى",
+    selectLangFirst: "اختر لغة الإخراج أولاً",
   },
   en: {
     appTitle: "Mulakhas",
@@ -69,10 +77,7 @@ const translations: Record<"ar" | "en", Dict> = {
     placeholder: "Paste text, upload an image/PDF, or enter a URL to extract text...",
     chars: "chars",
     clear: "Clear",
-    short: "Short (≤200 chars)",
-    long: "Long (300–500 chars)",
-    resultShort: "Result (Short)",
-    resultLong: "Result (Long)",
+    result: "Result",
     copy: "Copy",
     copied: "Copied",
     footer: "Works on Web, Mobile, and Desktop.",
@@ -100,6 +105,14 @@ const translations: Record<"ar" | "en", Dict> = {
     delete: "Delete",
     uploadFile: "Upload image or PDF",
     fileHint: "Image or PDF (max 5MB)",
+    summarize: "Summarize",
+    outputLanguage: "Output language",
+    selectLanguage: "Select language",
+    minChars: "Min",
+    maxChars: "Max",
+    rangeHint: "Character range",
+    invalidRange: "Max must be greater than Min",
+    selectLangFirst: "Select an output language first",
   },
 };
 

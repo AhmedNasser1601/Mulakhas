@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import {
   Loader2, Upload, Volume2, Square, Copy, Sparkles, FileText, Languages,
-  Share2, FileDown, Link as LinkIcon, History, Trash2, RotateCcw, X,
+  Share2, FileDown, Link as LinkIcon, History, Trash2, RotateCcw, X, Plus, Minus,
 } from "lucide-react";
 import { toast } from "sonner";
 import jsPDF from "jspdf";
@@ -11,6 +11,10 @@ import jsPDF from "jspdf";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from "@/components/ui/select";
 import { Toaster } from "@/components/ui/sonner";
 import {
   summarizeArabic,
@@ -22,11 +26,11 @@ import { useI18n } from "@/lib/i18n";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "ملخّص — Arabic & English Text Summarizer" },
+      { title: "ملخّص — Multilingual Text Summarizer" },
       {
         name: "description",
         content:
-          "Smart tool to summarize and paraphrase Arabic & English text, with read-aloud, image/PDF OCR, and history.",
+          "Smart tool to summarize and paraphrase text in many languages, with read-aloud, image/PDF OCR, and history.",
       },
     ],
   }),
@@ -54,14 +58,38 @@ export const Route = createFileRoute("/")({
 type HistoryItem = {
   id: string;
   ts: number;
-  mode: "short" | "long";
-  lang: "ar" | "en";
+  minChars: number;
+  maxChars: number;
+  outputLang: string;
+  uiLang: "ar" | "en";
   source: string;
   result: string;
 };
 
-const HISTORY_KEY = "mulakhas:history";
+const HISTORY_KEY = "mulakhas:history:v2";
 const MAX_BYTES = 5 * 1024 * 1024;
+const MIN_BOUND = 20;
+const MAX_BOUND = 2000;
+const STEP = 20;
+
+const OUTPUT_LANGS: { code: string; ar: string; en: string }[] = [
+  { code: "ar", ar: "العربية", en: "Arabic" },
+  { code: "en", ar: "الإنجليزية", en: "English" },
+  { code: "es", ar: "الإسبانية", en: "Spanish" },
+  { code: "fr", ar: "الفرنسية", en: "French" },
+  { code: "de", ar: "الألمانية", en: "German" },
+  { code: "zh", ar: "الصينية", en: "Chinese" },
+  { code: "hi", ar: "الهندية", en: "Hindi" },
+  { code: "pt", ar: "البرتغالية", en: "Portuguese" },
+  { code: "ru", ar: "الروسية", en: "Russian" },
+  { code: "ja", ar: "اليابانية", en: "Japanese" },
+  { code: "tr", ar: "التركية", en: "Turkish" },
+  { code: "it", ar: "الإيطالية", en: "Italian" },
+  { code: "ur", ar: "الأردية", en: "Urdu" },
+  { code: "fa", ar: "الفارسية", en: "Persian" },
+];
+
+const clamp = (n: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, n));
 
 function Index() {
   const summarize = useServerFn(summarizeArabic);
@@ -71,8 +99,10 @@ function Index() {
 
   const [text, setText] = useState("");
   const [result, setResult] = useState("");
-  const [mode, setMode] = useState<"short" | "long" | null>(null);
-  const [loading, setLoading] = useState<null | "short" | "long" | "ocr" | "url">(null);
+  const [outputLang, setOutputLang] = useState<string>("");
+  const [minChars, setMinChars] = useState(100);
+  const [maxChars, setMaxChars] = useState(300);
+  const [loading, setLoading] = useState<null | "sum" | "ocr" | "url">(null);
   const [speaking, setSpeaking] = useState(false);
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [showHistory, setShowHistory] = useState(false);
@@ -94,21 +124,25 @@ function Index() {
     persistHistory([item, ...history].slice(0, 50));
   };
 
-  const handleSummarize = async (m: "short" | "long") => {
-    if (!text.trim()) {
-      toast.error(t.enterTextFirst);
-      return;
-    }
-    setLoading(m);
-    setMode(m);
+  const rangeValid = maxChars > minChars;
+  const canSummarize = !!text.trim() && !!outputLang && rangeValid && loading === null;
+
+  const setMin = (n: number) => setMinChars(clamp(Math.round(n), MIN_BOUND, MAX_BOUND));
+  const setMax = (n: number) => setMaxChars(clamp(Math.round(n), MIN_BOUND, MAX_BOUND));
+
+  const handleSummarize = async () => {
+    if (!text.trim()) { toast.error(t.enterTextFirst); return; }
+    if (!outputLang) { toast.error(t.selectLangFirst); return; }
+    if (!rangeValid) { toast.error(t.invalidRange); return; }
+    setLoading("sum");
     try {
-      const { result } = await summarize({ data: { text, mode: m, lang } });
+      const { result } = await summarize({ data: { text, minChars, maxChars, outputLang } });
       setResult(result);
       addHistory({
         id: crypto.randomUUID(),
         ts: Date.now(),
-        mode: m,
-        lang,
+        minChars, maxChars, outputLang,
+        uiLang: lang,
         source: text,
         result,
       });
@@ -120,13 +154,9 @@ function Index() {
   };
 
   const handleFile = async (file: File) => {
-    if (file.size > MAX_BYTES) {
-      toast.error(t.fileTooLarge);
-      return;
-    }
+    if (file.size > MAX_BYTES) { toast.error(t.fileTooLarge); return; }
     if (!file.type.startsWith("image/") && file.type !== "application/pdf") {
-      toast.error(t.extractFailed);
-      return;
+      toast.error(t.extractFailed); return;
     }
     setLoading("ocr");
     try {
@@ -171,19 +201,15 @@ function Index() {
 
   const speak = (content: string) => {
     if (typeof window === "undefined" || !("speechSynthesis" in window)) {
-      toast.error(t.noSpeech);
-      return;
+      toast.error(t.noSpeech); return;
     }
-    if (speaking) {
-      window.speechSynthesis.cancel();
-      setSpeaking(false);
-      return;
-    }
+    if (speaking) { window.speechSynthesis.cancel(); setSpeaking(false); return; }
     if (!content.trim()) return;
     const u = new SpeechSynthesisUtterance(content);
-    u.lang = lang === "ar" ? "ar-SA" : "en-US";
+    const speakLang = outputLang || lang;
+    u.lang = speakLang === "ar" ? "ar-SA" : speakLang === "en" ? "en-US" : speakLang;
     u.rate = 0.95;
-    const v = window.speechSynthesis.getVoices().find((x) => x.lang.startsWith(lang === "ar" ? "ar" : "en"));
+    const v = window.speechSynthesis.getVoices().find((x) => x.lang.toLowerCase().startsWith(speakLang.toLowerCase()));
     if (v) u.voice = v;
     u.onend = () => setSpeaking(false);
     u.onerror = () => setSpeaking(false);
@@ -199,12 +225,8 @@ function Index() {
   const share = async (s: string) => {
     if (!s.trim()) return;
     try {
-      if (navigator.share) {
-        await navigator.share({ title: t.appTitle, text: s });
-      } else {
-        await navigator.clipboard.writeText(s);
-        toast.success(t.copied);
-      }
+      if (navigator.share) await navigator.share({ title: t.appTitle, text: s });
+      else { await navigator.clipboard.writeText(s); toast.success(t.copied); }
     } catch (e) {
       if ((e as Error)?.name !== "AbortError") toast.error(t.shareFailed);
     }
@@ -216,16 +238,15 @@ function Index() {
     const margin = 48;
     const width = doc.internal.pageSize.getWidth() - margin * 2;
     doc.setFontSize(12);
-    // jsPDF default fonts don't render Arabic glyphs well, but text is selectable/copyable.
     const lines = doc.splitTextToSize(s, width);
     let y = margin;
     const lineHeight = 18;
     const pageH = doc.internal.pageSize.getHeight();
-    const isAr = lang === "ar";
+    const isRtl = outputLang === "ar" || outputLang === "ur" || outputLang === "fa";
     for (const line of lines) {
       if (y > pageH - margin) { doc.addPage(); y = margin; }
-      doc.text(line, isAr ? doc.internal.pageSize.getWidth() - margin : margin, y, {
-        align: isAr ? "right" : "left",
+      doc.text(line, isRtl ? doc.internal.pageSize.getWidth() - margin : margin, y, {
+        align: isRtl ? "right" : "left",
       });
       y += lineHeight;
     }
@@ -236,7 +257,9 @@ function Index() {
   const restoreHistory = (h: HistoryItem) => {
     setText(h.source);
     setResult(h.result);
-    setMode(h.mode);
+    setOutputLang(h.outputLang);
+    setMinChars(h.minChars);
+    setMaxChars(h.maxChars);
     setShowHistory(false);
   };
 
@@ -291,8 +314,7 @@ function Index() {
                 }}
               />
               <Button
-                variant="outline"
-                size="sm"
+                variant="outline" size="sm"
                 onClick={() => fileRef.current?.click()}
                 disabled={loading === "ocr"}
                 title={t.fileHint}
@@ -329,26 +351,50 @@ function Index() {
             )}
           </div>
 
-          <div className="grid grid-cols-2 gap-3 mt-5">
-            <Button
-              size="lg"
-              onClick={() => handleSummarize("short")}
-              disabled={loading !== null || !text.trim()}
-              className="bg-[image:var(--gradient-hero)] hover:opacity-90 text-primary-foreground shadow-[var(--shadow-soft)]"
-            >
-              {loading === "short" ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
-              <span className={spaceLg}>{t.short}</span>
-            </Button>
-            <Button
-              size="lg"
-              variant="secondary"
-              onClick={() => handleSummarize("long")}
-              disabled={loading !== null || !text.trim()}
-            >
-              {loading === "long" ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
-              <span className={spaceLg}>{t.long}</span>
-            </Button>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-5">
+            <div className="space-y-1.5">
+              <label className="text-xs font-medium text-muted-foreground">{t.outputLanguage}</label>
+              <Select value={outputLang} onValueChange={setOutputLang}>
+                <SelectTrigger>
+                  <SelectValue placeholder={t.selectLanguage} />
+                </SelectTrigger>
+                <SelectContent>
+                  {OUTPUT_LANGS.map((l) => (
+                    <SelectItem key={l.code} value={l.code}>
+                      {lang === "ar" ? l.ar : l.en}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <NumberStepper
+              label={t.minChars} value={minChars}
+              onChange={setMin} min={MIN_BOUND} max={MAX_BOUND} step={STEP}
+              invalid={!rangeValid}
+            />
+            <NumberStepper
+              label={t.maxChars} value={maxChars}
+              onChange={setMax} min={MIN_BOUND} max={MAX_BOUND} step={STEP}
+              invalid={!rangeValid}
+            />
           </div>
+          {!rangeValid && (
+            <p className="text-xs text-destructive mt-2">{t.invalidRange}</p>
+          )}
+
+          <Button
+            size="lg"
+            onClick={handleSummarize}
+            disabled={!canSummarize}
+            className="mt-5 w-full bg-[image:var(--gradient-hero)] hover:opacity-90 text-primary-foreground shadow-[var(--shadow-soft)]"
+          >
+            {loading === "sum" ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
+            <span className={spaceLg}>{t.summarize}</span>
+          </Button>
+          {!outputLang && (
+            <p className="text-xs text-muted-foreground text-center mt-2">{t.selectLangFirst}</p>
+          )}
         </Card>
 
         {result && (
@@ -356,7 +402,10 @@ function Index() {
             <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
               <h2 className="font-semibold text-sm flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-primary" />
-                {mode === "short" ? t.resultShort : t.resultLong}
+                {t.result}
+                <span className="text-xs text-muted-foreground font-normal">
+                  ({minChars}–{maxChars} {t.chars})
+                </span>
               </h2>
               <div className="flex gap-2 flex-wrap">
                 <Button variant="ghost" size="sm" onClick={() => speak(result)}>
@@ -431,15 +480,15 @@ function Index() {
               ) : (
                 history.map((h) => (
                   <Card key={h.id} className="p-3 space-y-2">
-                    <div className="flex items-center justify-between text-xs text-muted-foreground">
-                      <span>
-                        {new Date(h.ts).toLocaleString(h.lang === "ar" ? "ar-EG" : "en-US")}
+                    <div className="flex items-center justify-between text-xs text-muted-foreground gap-2">
+                      <span className="truncate">
+                        {new Date(h.ts).toLocaleString(h.uiLang === "ar" ? "ar-EG" : "en-US")}
                         {" · "}
-                        {h.mode === "short" ? t.resultShort : t.resultLong}
+                        {h.outputLang.toUpperCase()}
                         {" · "}
-                        {h.lang.toUpperCase()}
+                        {h.minChars}–{h.maxChars}
                       </span>
-                      <div className="flex gap-1">
+                      <div className="flex gap-1 shrink-0">
                         <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => restoreHistory(h)}>
                           <RotateCcw className="w-3.5 h-3.5" />
                         </Button>
@@ -459,6 +508,52 @@ function Index() {
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+function NumberStepper({
+  label, value, onChange, min, max, step, invalid,
+}: {
+  label: string;
+  value: number;
+  onChange: (n: number) => void;
+  min: number; max: number; step: number;
+  invalid?: boolean;
+}) {
+  return (
+    <div className="space-y-1.5">
+      <label className="text-xs font-medium text-muted-foreground">{label}</label>
+      <div className="flex items-center gap-1">
+        <Button
+          type="button" variant="outline" size="icon"
+          className="h-9 w-9 shrink-0"
+          onClick={() => onChange(value - step)}
+          disabled={value <= min}
+          aria-label="decrease"
+        >
+          <Minus className="w-4 h-4" />
+        </Button>
+        <Input
+          type="number" inputMode="numeric"
+          value={value}
+          min={min} max={max} step={step}
+          onChange={(e) => {
+            const n = parseInt(e.target.value, 10);
+            if (!Number.isNaN(n)) onChange(n);
+          }}
+          className={`text-center ${invalid ? "border-destructive focus-visible:ring-destructive" : ""}`}
+        />
+        <Button
+          type="button" variant="outline" size="icon"
+          className="h-9 w-9 shrink-0"
+          onClick={() => onChange(value + step)}
+          disabled={value >= max}
+          aria-label="increase"
+        >
+          <Plus className="w-4 h-4" />
+        </Button>
+      </div>
     </div>
   );
 }
