@@ -358,37 +358,62 @@ function Index() {
             )}
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-5">
-            <div className="space-y-1.5">
-              <label className="text-xs font-medium text-muted-foreground">{t.outputLanguage}</label>
-              <Select value={outputLang} onValueChange={setOutputLang}>
-                <SelectTrigger>
-                  <SelectValue placeholder={t.selectLanguage} />
-                </SelectTrigger>
-                <SelectContent>
-                  {OUTPUT_LANGS.map((l) => (
-                    <SelectItem key={l.code} value={l.code}>
-                      {lang === "ar" ? l.ar : l.en}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <NumberStepper
-              label={t.minChars} value={minChars}
-              onChange={setMin} min={MIN_BOUND} max={MAX_BOUND} step={STEP}
-              invalid={!rangeValid}
-            />
-            <NumberStepper
-              label={t.maxChars} value={maxChars}
-              onChange={setMax} min={MIN_BOUND} max={MAX_BOUND} step={STEP}
-              invalid={!rangeValid}
-            />
+          <div className="space-y-1.5 mt-5">
+            <label className="text-xs font-medium text-muted-foreground">{t.outputLanguage}</label>
+            <Select value={outputLang} onValueChange={setOutputLang}>
+              <SelectTrigger>
+                <SelectValue placeholder={t.selectLanguage} />
+              </SelectTrigger>
+              <SelectContent>
+                {OUTPUT_LANGS.map((l) => (
+                  <SelectItem key={l.code} value={l.code}>
+                    {lang === "ar" ? l.ar : l.en}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
-          {!rangeValid && (
-            <p className="text-xs text-destructive mt-2">{t.invalidRange}</p>
-          )}
+
+          <div className="mt-5 space-y-2">
+            <div className="flex items-center justify-between gap-3 flex-wrap">
+              <label className="text-xs font-medium text-muted-foreground">
+                {t.rangeHint}
+              </label>
+              <div className="text-xs tabular-nums flex items-center gap-2">
+                <span className="rounded-md bg-secondary text-secondary-foreground px-2 py-0.5">
+                  {t.minChars} <span className="font-semibold text-foreground">{minChars}</span>
+                </span>
+                <span className="text-muted-foreground">—</span>
+                <span className="rounded-md bg-secondary text-secondary-foreground px-2 py-0.5">
+                  {t.maxChars} <span className="font-semibold text-foreground">{maxChars}</span>
+                </span>
+                <span className="text-muted-foreground">{t.chars}</span>
+              </div>
+            </div>
+            <div className="flex items-center gap-3" dir="ltr">
+              <span className="text-[10px] text-muted-foreground tabular-nums w-8 text-right">{MIN_BOUND}</span>
+              <Slider
+                min={MIN_BOUND}
+                max={MAX_BOUND}
+                step={STEP}
+                value={[minChars, maxChars]}
+                minStepsBetweenThumbs={1}
+                onValueChange={(v) => {
+                  const arr = v as number[];
+                  const [a, b] = [Math.min(...arr), Math.max(...arr)];
+                  setMin(a);
+                  setMax(b);
+                }}
+                className="flex-1"
+              />
+              <span className="text-[10px] text-muted-foreground tabular-nums w-10">{MAX_BOUND}</span>
+            </div>
+            <p className="text-[11px] text-muted-foreground">
+              {lang === "ar"
+                ? `سيكون طول الملخّص بين ${minChars} و ${maxChars} حرفاً.`
+                : `Summary length will be between ${minChars} and ${maxChars} characters.`}
+            </p>
+          </div>
 
           <Button
             size="lg"
