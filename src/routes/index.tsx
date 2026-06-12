@@ -4,6 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import {
   Loader2, Upload, Volume2, Square, Copy, Sparkles, FileText, Languages,
   Share2, FileDown, Link as LinkIcon, History, Trash2, RotateCcw, X, Plus, Minus,
+  Sun, Moon,
 } from "lucide-react";
 import { toast } from "sonner";
 import jsPDF from "jspdf";
@@ -22,6 +23,7 @@ import {
   extractTextFromUrl,
 } from "@/lib/api/arabic.functions";
 import { useI18n } from "@/lib/i18n";
+import { useTheme } from "@/lib/theme";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -96,6 +98,7 @@ function Index() {
   const ocr = useServerFn(extractTextFromImage);
   const ocrUrl = useServerFn(extractTextFromUrl);
   const { t, lang, toggle, dir } = useI18n();
+  const { theme, toggle: toggleTheme } = useTheme();
 
   const [text, setText] = useState("");
   const [result, setResult] = useState("");
@@ -281,6 +284,9 @@ function Index() {
                 {history.length}
               </span>
             )}
+          </Button>
+          <Button variant="outline" size="sm" onClick={toggleTheme} aria-label="Toggle theme">
+            {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
           </Button>
           <Button variant="outline" size="sm" onClick={toggle} aria-label="Toggle language">
             <Languages className="w-4 h-4" />
