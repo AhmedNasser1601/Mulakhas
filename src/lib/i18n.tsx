@@ -105,6 +105,14 @@ const translations: Record<"ar" | "en", Dict> = {
     delete: "Delete",
     uploadFile: "Upload image or PDF",
     fileHint: "Image or PDF (max 5MB)",
+    summarize: "Summarize",
+    outputLanguage: "Output language",
+    selectLanguage: "Select language",
+    minChars: "Min",
+    maxChars: "Max",
+    rangeHint: "Character range",
+    invalidRange: "Max must be greater than Min",
+    selectLangFirst: "Select an output language first",
   },
 };
 
