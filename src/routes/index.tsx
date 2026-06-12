@@ -94,6 +94,35 @@ const OUTPUT_LANGS: { code: string; ar: string; en: string }[] = [
 
 const clamp = (n: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, n));
 
+const mergeVoiceText = (base: string, spoken: string) => {
+  const trimmedBase = base.trimEnd();
+  const trimmedSpoken = spoken.trim();
+  if (!trimmedBase) return trimmedSpoken;
+  if (!trimmedSpoken) return trimmedBase;
+  return `${trimmedBase} ${trimmedSpoken}`;
+};
+
+const mergeOverlappingSpeech = (current: string, next: string) => {
+  const currentWords = current.trim().split(/\s+/).filter(Boolean);
+  const nextWords = next.trim().split(/\s+/).filter(Boolean);
+  if (!currentWords.length) return nextWords.join(" ");
+  if (!nextWords.length) return currentWords.join(" ");
+
+  const maxOverlap = Math.min(currentWords.length, nextWords.length);
+  for (let size = maxOverlap; size > 0; size -= 1) {
+    const currentTail = currentWords.slice(-size).join(" ");
+    const nextHead = nextWords.slice(0, size).join(" ");
+    if (currentTail === nextHead) {
+      return [...currentWords, ...nextWords.slice(size)].join(" ");
+    }
+  }
+
+  return [...currentWords, ...nextWords].join(" ");
+};
+
+const combineSpeechSegments = (segments: string[]) =>
+  segments.reduce((combined, segment) => mergeOverlappingSpeech(combined, segment), "");
+
 function Index() {
   const summarize = useServerFn(summarizeArabic);
   const ocr = useServerFn(extractTextFromImage);
@@ -112,6 +141,8 @@ function Index() {
   const [showHistory, setShowHistory] = useState(false);
   const [listening, setListening] = useState(false);
   const recognitionRef = useRef<any>(null);
+  const voiceBaseTextRef = useRef("");
+  const voiceFinalTextRef = useRef("");
   const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -217,30 +248,34 @@ function Index() {
     rec.lang = lang === "ar" ? "ar-SA" : "en-US";
     rec.continuous = true;
     rec.interimResults = true;
-    let finalBuffer = "";
-    let lastCommittedIndex = -1;
+    voiceBaseTextRef.current = text;
+    voiceFinalTextRef.current = "";
     rec.onresult = (e: any) => {
-      let finalChunk = "";
+      const finalSegments: string[] = [];
+      const interimSegments: string[] = [];
       for (let i = 0; i < e.results.length; i++) {
         const r = e.results[i];
-        if (r.isFinal && i > lastCommittedIndex) {
-          finalChunk += r[0].transcript;
-          lastCommittedIndex = i;
-        }
+        const transcript = r[0]?.transcript ?? "";
+        if (r.isFinal) finalSegments.push(transcript);
+        else interimSegments.push(transcript);
       }
-      if (finalChunk) {
-        finalBuffer += finalChunk;
-        setText((prev) => (prev ? prev + " " : "") + finalChunk.trim());
-      }
+      const finalTranscript = combineSpeechSegments(finalSegments);
+      const interimTranscript = combineSpeechSegments(interimSegments);
+      const spokenTranscript = mergeOverlappingSpeech(finalTranscript, interimTranscript);
+      voiceFinalTextRef.current = finalTranscript.trim();
+      setText(mergeVoiceText(voiceBaseTextRef.current, spokenTranscript));
     };
     rec.onerror = (e: any) => {
       if (e.error === "not-allowed" || e.error === "service-not-allowed") toast.error(t.micDenied);
       else if (e.error !== "no-speech" && e.error !== "aborted") toast.error(t.unknownError);
+      recognitionRef.current = null;
       setListening(false);
     };
     rec.onend = () => {
+      recognitionRef.current = null;
+      setText(mergeVoiceText(voiceBaseTextRef.current, voiceFinalTextRef.current));
       setListening(false);
-      if (finalBuffer.trim()) toast.success(t.extracted);
+      if (voiceFinalTextRef.current) toast.success(t.extracted);
     };
     try {
       rec.start();
