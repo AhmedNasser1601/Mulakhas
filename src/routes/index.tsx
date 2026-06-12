@@ -276,7 +276,10 @@ function Index() {
     <div dir={dir} className="min-h-screen px-4 py-8 sm:px-6 sm:py-12">
       <Toaster position="top-center" dir={dir} />
       <div className="mx-auto max-w-4xl space-y-8">
-        <div className="flex items-center justify-between gap-2">
+        <div
+          dir={lang === "ar" ? "ltr" : "rtl"}
+          className="flex items-center justify-between gap-2"
+        >
           <Button variant="outline" size="sm" onClick={() => setShowHistory(true)} aria-label="History">
             <History className="w-4 h-4" />
             <span className={space}>{t.history}</span>
@@ -377,12 +380,9 @@ function Index() {
           </div>
 
           <div className="mt-5 space-y-2">
-            <div className="flex items-center gap-3">
-              <span className="text-[10px] text-muted-foreground tabular-nums w-10 text-center">
-                {lang === "ar" ? MAX_BOUND : MIN_BOUND}
-              </span>
+            <div className="flex items-center gap-3" dir="ltr">
+              <span className="text-[10px] text-muted-foreground tabular-nums w-10 text-center">{MIN_BOUND}</span>
               <Slider
-                dir={dir}
                 min={MIN_BOUND}
                 max={MAX_BOUND}
                 step={STEP}
@@ -396,9 +396,7 @@ function Index() {
                 }}
                 className="flex-1"
               />
-              <span className="text-[10px] text-muted-foreground tabular-nums w-10 text-center">
-                {lang === "ar" ? MIN_BOUND : MAX_BOUND}
-              </span>
+              <span className="text-[10px] text-muted-foreground tabular-nums w-10 text-center">{MAX_BOUND}</span>
             </div>
             <p className="text-[11px] text-muted-foreground">
               {lang === "ar"
