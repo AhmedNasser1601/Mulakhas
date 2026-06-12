@@ -285,6 +285,9 @@ function Index() {
               </span>
             )}
           </Button>
+          <Button variant="outline" size="sm" onClick={toggleTheme} aria-label="Toggle theme">
+            {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+          </Button>
           <Button variant="outline" size="sm" onClick={toggle} aria-label="Toggle language">
             <Languages className="w-4 h-4" />
             <span className={space}>{t.langToggle}</span>
