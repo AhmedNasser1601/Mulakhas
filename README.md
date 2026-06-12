@@ -87,21 +87,29 @@ Open <http://localhost:8080>.
 | `bun run lint` | Run ESLint |
 | `bun run format` | Run Prettier |
 
-## Editing
+## Editing & Deployment
 
-This project is built with [Lovable](https://lovable.dev).
-Changes pushed to this repo sync back to the Lovable editor automatically, and edits made in Lovable push commits here — bidirectional sync.
+This project is built and hosted with [Lovable](https://lovable.dev), with bidirectional GitHub sync — changes pushed to this repo flow into the Lovable editor, and prompts made in Lovable land here as commits on `main`.
 
-To edit in Lovable: open the project, prompt your change, ship.
-To edit locally: clone, edit, push to `main`.
+**Two ways to make changes:**
 
-## Deployment
+- **In Lovable** — open the project, describe the change, and ship. Frontend changes go live after clicking **Publish → Update**; backend changes (server functions, migrations, secrets) deploy automatically.
+- **Locally** — `git clone`, edit, commit, and push to `main`. The deployment pipeline picks it up the same way.
 
-The app is deployed at **<https://mulakhas.lovable.app>** via Lovable's one-click publish.
-You can also self-host the codebase on any platform that supports Cloudflare Workers / edge runtimes.
+**Hosting:**
+
+- Production: <https://mulakhas.lovable.app> — published via Lovable's one-click deploy onto Cloudflare Workers (edge runtime).
+- Self-hosting is supported on any platform that runs a TanStack Start SSR build on a Workers-compatible runtime. See the [self-hosting guide](https://docs.lovable.dev/tips-tricks/self-hosting).
 
 ## Credits
 
-Designed and developed by **Ahmed Nasser** — **أحمد ناصر**.
+Designed and developed by **Ahmed Nasser · أحمد ناصر**.
 
-Built with [Lovable](https://lovable.dev).
+- Idea, UX, bilingual (AR / EN) copy and RTL design
+- Frontend (TanStack Start, Tailwind v4, shadcn/ui)
+- Backend server functions on Lovable Cloud, powered by the Lovable AI Gateway
+
+Built with [Lovable](https://lovable.dev) · UI primitives from [shadcn/ui](https://ui.shadcn.com/) and [Radix](https://www.radix-ui.com/) · icons from [Lucide](https://lucide.dev/).
+
+If you find Mulakhas useful, a ⭐ on the repo is appreciated.
+
