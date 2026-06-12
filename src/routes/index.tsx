@@ -94,6 +94,14 @@ const OUTPUT_LANGS: { code: string; ar: string; en: string }[] = [
 
 const clamp = (n: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, n));
 
+const mergeVoiceText = (base: string, spoken: string) => {
+  const trimmedBase = base.trimEnd();
+  const trimmedSpoken = spoken.trim();
+  if (!trimmedBase) return trimmedSpoken;
+  if (!trimmedSpoken) return trimmedBase;
+  return `${trimmedBase} ${trimmedSpoken}`;
+};
+
 function Index() {
   const summarize = useServerFn(summarizeArabic);
   const ocr = useServerFn(extractTextFromImage);
@@ -112,6 +120,8 @@ function Index() {
   const [showHistory, setShowHistory] = useState(false);
   const [listening, setListening] = useState(false);
   const recognitionRef = useRef<any>(null);
+  const voiceBaseTextRef = useRef("");
+  const voiceFinalTextRef = useRef("");
   const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -217,30 +227,31 @@ function Index() {
     rec.lang = lang === "ar" ? "ar-SA" : "en-US";
     rec.continuous = true;
     rec.interimResults = true;
-    let finalBuffer = "";
-    let lastCommittedIndex = -1;
+    voiceBaseTextRef.current = text;
+    voiceFinalTextRef.current = "";
     rec.onresult = (e: any) => {
-      let finalChunk = "";
+      let finalTranscript = "";
+      let interimTranscript = "";
       for (let i = 0; i < e.results.length; i++) {
         const r = e.results[i];
-        if (r.isFinal && i > lastCommittedIndex) {
-          finalChunk += r[0].transcript;
-          lastCommittedIndex = i;
-        }
+        const transcript = r[0]?.transcript ?? "";
+        if (r.isFinal) finalTranscript += transcript;
+        else interimTranscript += transcript;
       }
-      if (finalChunk) {
-        finalBuffer += finalChunk;
-        setText((prev) => (prev ? prev + " " : "") + finalChunk.trim());
-      }
+      voiceFinalTextRef.current = finalTranscript.trim();
+      setText(mergeVoiceText(voiceBaseTextRef.current, `${finalTranscript} ${interimTranscript}`));
     };
     rec.onerror = (e: any) => {
       if (e.error === "not-allowed" || e.error === "service-not-allowed") toast.error(t.micDenied);
       else if (e.error !== "no-speech" && e.error !== "aborted") toast.error(t.unknownError);
+      recognitionRef.current = null;
       setListening(false);
     };
     rec.onend = () => {
+      recognitionRef.current = null;
+      setText(mergeVoiceText(voiceBaseTextRef.current, voiceFinalTextRef.current));
       setListening(false);
-      if (finalBuffer.trim()) toast.success(t.extracted);
+      if (voiceFinalTextRef.current) toast.success(t.extracted);
     };
     try {
       rec.start();
