@@ -9,17 +9,11 @@ const ThemeCtx = createContext<{ theme: Theme; setTheme: (t: Theme) => void; tog
 });
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>("light");
+  const [theme, setThemeState] = useState<Theme>("dark");
 
   useEffect(() => {
     const saved = (typeof window !== "undefined" && localStorage.getItem("theme")) as Theme | null;
-    const initial: Theme =
-      saved === "light" || saved === "dark"
-        ? saved
-        : typeof window !== "undefined" && window.matchMedia("(prefers-color-scheme: dark)").matches
-        ? "dark"
-        : "light";
-    setThemeState(initial);
+    setThemeState(saved === "light" || saved === "dark" ? saved : "dark");
   }, []);
 
   useEffect(() => {

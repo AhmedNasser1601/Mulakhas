@@ -107,9 +107,15 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="ar" dir="rtl" className="dark">
       <head>
         <HeadContent />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('theme');var l=localStorage.getItem('lang');var d=document.documentElement;if(t==='light'){d.classList.remove('dark')}else{d.classList.add('dark')}if(l==='en'){d.lang='en';d.dir='ltr'}else{d.lang='ar';d.dir='rtl'}}catch(e){}})();`,
+          }}
+        />
       </head>
       <body>
         {children}
