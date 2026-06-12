@@ -22,7 +22,8 @@ type Dict = {
 const translations: Record<"ar" | "en", Dict> = {
   ar: {
     appTitle: "ملخّص",
-    tagline: "أداة ذكية لتلخيص وإعادة صياغة النصوص العربية، قراءتها، واستخراجها من الصور وملفات PDF.",
+    tagline: "أداة ذكية لتلخيص النصوص وإعادة صياغتها، قراءتها، واستخراجها من الصور وملفات PDF بأي لغة.",
+    taglineShort: "تلخيص ذكي بأي لغة.",
     originalText: "النص الأصلي",
     uploadImage: "رفع ملف",
     read: "قراءة",
