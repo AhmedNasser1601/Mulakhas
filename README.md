@@ -25,7 +25,7 @@
 
 | English (LTR) | Arabic (RTL) |
 |---|---|
-| ![English UI](docs/screenshots/hero-en.png) | ![Arabic UI](docs/screenshots/hero-ar.png) |
+| ![English UI](https://mulakhas.lovable.app/__l5e/assets-v1/049efe57-9e1a-44bb-80c1-717b82f4fd01/hero-en.png) | ![Arabic UI](https://mulakhas.lovable.app/__l5e/assets-v1/5d8ec8b9-5323-4076-9422-cb55f1379494/hero-ar.png) |
 
 ## How it works
 
