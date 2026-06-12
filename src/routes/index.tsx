@@ -357,7 +357,7 @@ function Index() {
             )}
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-5">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-5">
             <div className="space-y-1.5">
               <label className="text-xs font-medium text-muted-foreground">{t.outputLanguage}</label>
               <Select value={outputLang} onValueChange={setOutputLang}>
@@ -374,27 +374,16 @@ function Index() {
               </Select>
             </div>
 
-            <div className="space-y-1.5">
-              <div className="flex items-center justify-between text-xs font-medium text-muted-foreground">
-                <span>{t.rangeHint}</span>
-                <span className="tabular-nums text-foreground">
-                  {minChars} – {maxChars} {t.chars}
-                </span>
-              </div>
-              <Slider
-                dir="ltr"
-                min={MIN_BOUND}
-                max={MAX_BOUND}
-                step={STEP}
-                value={[minChars, maxChars]}
-                onValueChange={(v) => {
-                  const [a, b] = v as [number, number];
-                  setMin(Math.min(a, b));
-                  setMax(Math.max(a, b));
-                }}
-                className="py-3"
-              />
-            </div>
+            <NumberStepper
+              label={t.minChars} value={minChars}
+              onChange={setMin} min={MIN_BOUND} max={MAX_BOUND} step={STEP}
+              invalid={!rangeValid}
+            />
+            <NumberStepper
+              label={t.maxChars} value={maxChars}
+              onChange={setMax} min={MIN_BOUND} max={MAX_BOUND} step={STEP}
+              invalid={!rangeValid}
+            />
           </div>
           {!rangeValid && (
             <p className="text-xs text-destructive mt-2">{t.invalidRange}</p>
