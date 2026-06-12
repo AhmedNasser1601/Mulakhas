@@ -267,7 +267,20 @@ function Index() {
           </Card>
         )}
 
-        <footer className="text-center text-xs text-muted-foreground pt-4">{t.footer}</footer>
+        <footer className="text-center text-xs text-muted-foreground pt-4 space-y-1">
+          <p>{t.footer}</p>
+          <p>
+            {lang === "ar" ? "تطوير: " : "Developed by: "}
+            <a
+              href="https://linkedin.com/in/ahmednasser1601"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-semibold text-primary hover:underline"
+            >
+              Ahmed Nasser
+            </a>
+          </p>
+        </footer>
       </div>
     </div>
   );
