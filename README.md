@@ -25,7 +25,7 @@
 
 | English (LTR) | Arabic (RTL) |
 |---|---|
-| ![English UI](https://mulakhas.lovable.app/__l5e/assets-v1/049efe57-9e1a-44bb-80c1-717b82f4fd01/hero-en.png) | ![Arabic UI](https://mulakhas.lovable.app/__l5e/assets-v1/5d8ec8b9-5323-4076-9422-cb55f1379494/hero-ar.png) |
+| <img src="https://mulakhas.lovable.app/__l5e/assets-v1/e469dd19-4521-4971-a249-ab5a455da8d4/hero-en.png" alt="English UI" width="360"> | <img src="https://mulakhas.lovable.app/__l5e/assets-v1/4946a25f-746f-403a-a2d8-1db6e4177406/hero-ar.png" alt="Arabic UI" width="360"> |
 
 ## How it works
 
