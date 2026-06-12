@@ -2,7 +2,17 @@ import { createContext, useContext, useEffect, useState, ReactNode } from "react
 
 export type Lang = "ar" | "en";
 
-const translations = {
+type Dict = {
+  appTitle: string; tagline: string; originalText: string; uploadImage: string;
+  read: string; stop: string; placeholder: string; chars: string; clear: string;
+  short: string; long: string; resultShort: string; resultLong: string;
+  copy: string; copied: string; footer: string; enterTextFirst: string;
+  imageTooLarge: string; noTextFound: string; extracted: string;
+  extractFailed: string; unknownError: string; noSpeech: string;
+  retry: string; error: string; langToggle: string;
+};
+
+const translations: Record<"ar" | "en", Dict> = {
   ar: {
     appTitle: "ملخّص",
     tagline: "أداة ذكية لتلخيص وإعادة صياغة النصوص العربية، قراءتها، واستخراجها من الصور.",
@@ -59,9 +69,7 @@ const translations = {
     error: "An error occurred",
     langToggle: "ع",
   },
-} as const;
-
-type Dict = typeof translations.ar;
+};
 
 const I18nCtx = createContext<{
   lang: Lang;
