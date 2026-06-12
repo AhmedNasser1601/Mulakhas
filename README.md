@@ -13,10 +13,11 @@
 - **AI summarization & rephrasing** in any output language, with a configurable summary length range (20 – 2000 characters).
 - **OCR** — drop in an image or PDF (up to 5 MB) and pull the text out.
 - **From URL** — paste a link to a remote image or PDF; the server fetches and extracts it.
+- **Voice input** — dictate text straight into the input via the Web Speech API (Arabic or English, with overlap-aware deduplication).
 - **Read aloud** — built-in text-to-speech with start / stop.
 - **One-tap actions** — Copy, Share (Web Share API), and Export as PDF.
 - **Local history** — every summary is saved on-device. Restore, delete, or wipe.
-- **Bilingual UI** — Arabic (RTL) and English (LTR) with proper directionality everywhere.
+- **Bilingual UI** — Arabic (RTL) and English (LTR) with proper directionality everywhere, including a mirrored length slider in Arabic.
 - **Light & dark themes**.
 - Works on **web, mobile, and desktop browsers** — no install.
 
@@ -28,8 +29,8 @@
 
 ## How it works
 
-1. **Input** — paste text, upload a file (image / PDF), or fetch from a URL.
-2. **Pick the output language** and adjust the min / max character range with the slider.
+1. **Input** — type, dictate via the mic, upload a file (image / PDF), or fetch from a URL.
+2. **Pick the output language** and adjust the min / max character range with the slider (mirrored in Arabic for natural RTL flow).
 3. **Summarize** — the server function calls the Lovable AI Gateway and streams the result back.
 4. **Use it** — read it aloud, copy it, share it, export it as a PDF, or restore it later from history.
 
