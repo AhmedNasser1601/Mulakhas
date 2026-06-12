@@ -4,7 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import {
   Loader2, Upload, Volume2, Square, Copy, Sparkles, FileText, Languages,
   Share2, FileDown, Link as LinkIcon, History, Trash2, RotateCcw, X,
-  Sun, Moon,
+  Sun, Moon, Plus, Minus,
 } from "lucide-react";
 import { toast } from "sonner";
 import jsPDF from "jspdf";
@@ -12,8 +12,7 @@ import jsPDF from "jspdf";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
-
-import { Slider } from "@/components/ui/slider";
+import { Input } from "@/components/ui/input";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
@@ -358,7 +357,7 @@ function Index() {
             )}
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-5">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-5">
             <div className="space-y-1.5">
               <label className="text-xs font-medium text-muted-foreground">{t.outputLanguage}</label>
               <Select value={outputLang} onValueChange={setOutputLang}>
@@ -375,27 +374,16 @@ function Index() {
               </Select>
             </div>
 
-            <div className="space-y-1.5">
-              <div className="flex items-center justify-between text-xs font-medium text-muted-foreground">
-                <span>{t.rangeHint}</span>
-                <span className="tabular-nums text-foreground">
-                  {minChars} – {maxChars} {t.chars}
-                </span>
-              </div>
-              <Slider
-                dir="ltr"
-                min={MIN_BOUND}
-                max={MAX_BOUND}
-                step={STEP}
-                value={[minChars, maxChars]}
-                onValueChange={(v) => {
-                  const [a, b] = v as [number, number];
-                  setMin(Math.min(a, b));
-                  setMax(Math.max(a, b));
-                }}
-                className="py-3"
-              />
-            </div>
+            <NumberStepper
+              label={t.minChars} value={minChars}
+              onChange={setMin} min={MIN_BOUND} max={MAX_BOUND} step={STEP}
+              invalid={!rangeValid}
+            />
+            <NumberStepper
+              label={t.maxChars} value={maxChars}
+              onChange={setMax} min={MIN_BOUND} max={MAX_BOUND} step={STEP}
+              invalid={!rangeValid}
+            />
           </div>
           {!rangeValid && (
             <p className="text-xs text-destructive mt-2">{t.invalidRange}</p>
@@ -526,6 +514,52 @@ function Index() {
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+function NumberStepper({
+  label, value, onChange, min, max, step, invalid,
+}: {
+  label: string;
+  value: number;
+  onChange: (n: number) => void;
+  min: number; max: number; step: number;
+  invalid?: boolean;
+}) {
+  return (
+    <div className="space-y-1.5">
+      <label className="text-xs font-medium text-muted-foreground">{label}</label>
+      <div className="flex items-center gap-1">
+        <Button
+          type="button" variant="outline" size="icon"
+          className="h-9 w-9 shrink-0"
+          onClick={() => onChange(value - step)}
+          disabled={value <= min}
+          aria-label="decrease"
+        >
+          <Minus className="w-4 h-4" />
+        </Button>
+        <Input
+          type="number" inputMode="numeric"
+          value={value}
+          min={min} max={max} step={step}
+          onChange={(e) => {
+            const n = parseInt(e.target.value, 10);
+            if (!Number.isNaN(n)) onChange(n);
+          }}
+          className={`text-center ${invalid ? "border-destructive focus-visible:ring-destructive" : ""}`}
+        />
+        <Button
+          type="button" variant="outline" size="icon"
+          className="h-9 w-9 shrink-0"
+          onClick={() => onChange(value + step)}
+          disabled={value >= max}
+          aria-label="increase"
+        >
+          <Plus className="w-4 h-4" />
+        </Button>
+      </div>
     </div>
   );
 }
