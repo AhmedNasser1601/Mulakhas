@@ -29,8 +29,8 @@
 
 ## How it works
 
-1. **Input** — paste text, upload a file (image / PDF), or fetch from a URL.
-2. **Pick the output language** and adjust the min / max character range with the slider.
+1. **Input** — type, dictate via the mic, upload a file (image / PDF), or fetch from a URL.
+2. **Pick the output language** and adjust the min / max character range with the slider (mirrored in Arabic for natural RTL flow).
 3. **Summarize** — the server function calls the Lovable AI Gateway and streams the result back.
 4. **Use it** — read it aloud, copy it, share it, export it as a PDF, or restore it later from history.
 
