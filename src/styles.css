@@ -42,8 +42,8 @@
   );
   --gradient-surface: linear-gradient(
     180deg,
-    oklch(0.99 0.005 180) 0%,
-    oklch(0.96 0.015 175) 100%
+    var(--surface-from) 0%,
+    var(--surface-to) 100%
   );
 }
 
@@ -68,6 +68,8 @@
   --border: oklch(0.9 0.015 180);
   --input: oklch(0.92 0.015 180);
   --ring: oklch(0.52 0.15 168);
+  --surface-from: oklch(0.99 0.005 180);
+  --surface-to: oklch(0.96 0.015 175);
 }
 
 .dark {
@@ -90,11 +92,17 @@
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
   --ring: oklch(0.7 0.16 168);
+  --surface-from: oklch(0.17 0.028 200);
+  --surface-to: oklch(0.13 0.022 205);
 }
 
 @layer base {
   * {
     border-color: var(--color-border);
+  }
+
+  html {
+    background: var(--color-background);
   }
 
   body {
