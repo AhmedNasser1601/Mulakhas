@@ -92,6 +92,8 @@
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
   --ring: oklch(0.7 0.16 168);
+  --surface-from: oklch(0.17 0.028 200);
+  --surface-to: oklch(0.13 0.022 205);
 }
 
 @layer base {
