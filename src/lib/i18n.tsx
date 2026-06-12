@@ -68,6 +68,10 @@ const translations: Record<"ar" | "en", Dict> = {
     rangeHint: "عدد الأحرف",
     invalidRange: "الحد الأقصى يجب أن يكون أكبر من الأدنى",
     selectLangFirst: "اختر لغة الإخراج أولاً",
+    voiceInput: "إدخال صوتي",
+    listening: "جارٍ الاستماع...",
+    noRecognition: "متصفحك لا يدعم الإدخال الصوتي",
+    micDenied: "تم رفض إذن الميكروفون",
   },
   en: {
     appTitle: "Mulakhas",
