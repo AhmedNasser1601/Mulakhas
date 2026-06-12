@@ -30,23 +30,28 @@ export const summarizeArabic = createServerFn({ method: "POST" })
     z.object({
       text: z.string().min(1).max(20000),
       mode: z.enum(["short", "long"]),
+      lang: z.enum(["ar", "en"]).optional().default("ar"),
     }),
   )
   .handler(async ({ data }) => {
-    const constraint =
-      data.mode === "short"
+    const isAr = data.lang === "ar";
+    const constraint = isAr
+      ? data.mode === "short"
         ? "أعد صياغة النص بإيجاز شديد بحيث لا يتجاوز 200 حرف."
-        : "أعد صياغة النص بشكل مفصّل بين 300 و500 حرف.";
-    const system =
-      "أنت أداة إعادة صياغة وتلخيص للنصوص العربية. أعد الإخراج باللغة العربية الفصحى فقط، بدون أي مقدمات أو تعليقات. التزم بعدد الأحرف المطلوب بدقة.";
+        : "أعد صياغة النص بشكل مفصّل بين 300 و500 حرف."
+      : data.mode === "short"
+        ? "Paraphrase the text very concisely in no more than 200 characters."
+        : "Paraphrase the text in detail, between 300 and 500 characters.";
+    const system = isAr
+      ? "أنت أداة إعادة صياغة وتلخيص للنصوص. أعد الإخراج باللغة العربية الفصحى فقط، بدون أي مقدمات أو تعليقات. التزم بعدد الأحرف المطلوب بدقة."
+      : "You are a text paraphrasing and summarization tool. Output only in clear English, with no preamble or commentary. Strictly respect the character limit.";
     const content = await callGateway({
       model: MODEL,
       messages: [
         { role: "system", content: system },
-        { role: "user", content: `${constraint}\n\nالنص:\n${data.text}` },
+        { role: "user", content: `${constraint}\n\n${isAr ? "النص" : "Text"}:\n${data.text}` },
       ],
     });
-    // Enforce char limit (best-effort trim)
     const limit = data.mode === "short" ? 200 : 500;
     return { result: content.length > limit ? content.slice(0, limit) : content };
   });
