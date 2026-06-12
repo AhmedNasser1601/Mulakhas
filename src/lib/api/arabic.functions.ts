@@ -18,43 +18,56 @@ async function callGateway(body: unknown) {
   });
   if (!res.ok) {
     const text = await res.text();
-    if (res.status === 429) throw new Error("تم تجاوز حد الطلبات. حاول لاحقاً.");
-    if (res.status === 402) throw new Error("نفدت الأرصدة. يرجى إضافة رصيد.");
+    if (res.status === 429) throw new Error("Rate limit exceeded. Try again later.");
+    if (res.status === 402) throw new Error("AI credits exhausted. Please add credits.");
     throw new Error(`AI error: ${res.status} ${text}`);
   }
   const data = await res.json();
   return (data?.choices?.[0]?.message?.content ?? "").toString().trim();
 }
 
+const LANG_NAMES: Record<string, string> = {
+  ar: "Arabic",
+  en: "English",
+  es: "Spanish",
+  fr: "French",
+  de: "German",
+  zh: "Chinese (Simplified)",
+  hi: "Hindi",
+  pt: "Portuguese",
+  ru: "Russian",
+  ja: "Japanese",
+  tr: "Turkish",
+  it: "Italian",
+  ur: "Urdu",
+  fa: "Persian",
+};
+
 export const summarizeArabic = createServerFn({ method: "POST" })
   .inputValidator(
     z.object({
       text: z.string().min(1).max(20000),
-      mode: z.enum(["short", "long"]),
-      lang: z.enum(["ar", "en"]).optional().default("ar"),
-    }),
+      minChars: z.number().int().min(20).max(5000),
+      maxChars: z.number().int().min(40).max(5000),
+      outputLang: z.string().min(2).max(8),
+    }).refine((v) => v.maxChars > v.minChars, { message: "maxChars must be greater than minChars" }),
   )
   .handler(async ({ data }) => {
-    const isAr = data.lang === "ar";
-    const constraint = isAr
-      ? data.mode === "short"
-        ? "أعد صياغة النص بإيجاز شديد بحيث لا يتجاوز 200 حرف."
-        : "أعد صياغة النص بشكل مفصّل بين 300 و500 حرف."
-      : data.mode === "short"
-        ? "Paraphrase the text very concisely in no more than 200 characters."
-        : "Paraphrase the text in detail, between 300 and 500 characters.";
-    const system = isAr
-      ? "أنت أداة إعادة صياغة وتلخيص للنصوص. أعد الإخراج باللغة العربية الفصحى فقط، بدون أي مقدمات أو تعليقات. التزم بعدد الأحرف المطلوب بدقة."
-      : "You are a text paraphrasing and summarization tool. Output only in clear English, with no preamble or commentary. Strictly respect the character limit.";
+    const langName = LANG_NAMES[data.outputLang] ?? data.outputLang;
+    const system =
+      `You are a text paraphrasing and summarization tool. Output ONLY in ${langName}, with no preamble or commentary. ` +
+      `Strictly produce a result between ${data.minChars} and ${data.maxChars} characters (inclusive). Never exceed ${data.maxChars} characters.`;
+    const user =
+      `Paraphrase/summarize the following text in ${langName}, between ${data.minChars} and ${data.maxChars} characters.\n\nText:\n${data.text}`;
     const content = await callGateway({
       model: MODEL,
       messages: [
         { role: "system", content: system },
-        { role: "user", content: `${constraint}\n\n${isAr ? "النص" : "Text"}:\n${data.text}` },
+        { role: "user", content: user },
       ],
     });
-    const limit = data.mode === "short" ? 200 : 500;
-    return { result: content.length > limit ? content.slice(0, limit) : content };
+    const trimmed = content.length > data.maxChars ? content.slice(0, data.maxChars) : content;
+    return { result: trimmed };
   });
 
 function buildExtractMessage(mime: string, dataUrl: string) {
@@ -68,7 +81,7 @@ function buildExtractMessage(mime: string, dataUrl: string) {
       {
         role: "system",
         content:
-          "You are an OCR/text extraction tool. Extract all text from the provided file as-is, preserving the original language (Arabic or English). Return only the extracted text with no commentary. If no text, return an empty string.",
+          "You are an OCR/text extraction tool. Extract all text from the provided file as-is, preserving the original language. Return only the extracted text with no commentary. If no text, return an empty string.",
       },
       {
         role: "user",
