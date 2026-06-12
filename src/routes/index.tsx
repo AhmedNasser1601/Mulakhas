@@ -474,9 +474,10 @@ function Index() {
           </div>
 
           <div className="mt-5 space-y-2">
-            <div className="flex items-center gap-3" dir="ltr">
+            <div className="flex items-center gap-3" dir={lang === "ar" ? "rtl" : "ltr"}>
               <span className="text-[10px] text-muted-foreground tabular-nums w-10 text-center">{MIN_BOUND}</span>
               <Slider
+                dir={lang === "ar" ? "rtl" : "ltr"}
                 min={MIN_BOUND}
                 max={MAX_BOUND}
                 step={STEP}
