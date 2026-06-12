@@ -110,6 +110,8 @@ function Index() {
   const [speaking, setSpeaking] = useState(false);
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [showHistory, setShowHistory] = useState(false);
+  const [listening, setListening] = useState(false);
+  const recognitionRef = useRef<any>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
