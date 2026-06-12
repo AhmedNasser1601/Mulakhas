@@ -385,6 +385,17 @@ function Index() {
                 {loading === "url" ? <Loader2 className="w-4 h-4 animate-spin" /> : <LinkIcon className="w-4 h-4" />}
                 <span className={space}>{t.fromUrl}</span>
               </Button>
+              <Button
+                variant={listening ? "default" : "outline"}
+                size="sm"
+                onClick={toggleVoice}
+                aria-label={t.voiceInput}
+                title={t.voiceInput}
+                className={listening ? "animate-pulse" : ""}
+              >
+                {listening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+                <span className={space}>{listening ? t.listening : t.voiceInput}</span>
+              </Button>
               <Button variant="ghost" size="sm" onClick={() => speak(text)} disabled={!text.trim()}>
                 {speaking ? <Square className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
                 <span className={space}>{speaking ? t.stop : t.read}</span>
