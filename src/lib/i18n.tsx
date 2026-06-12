@@ -3,7 +3,7 @@ import { createContext, useContext, useEffect, useState, ReactNode } from "react
 export type Lang = "ar" | "en";
 
 type Dict = {
-  appTitle: string; tagline: string; originalText: string; uploadImage: string;
+  appTitle: string; tagline: string; taglineShort: string; originalText: string; uploadImage: string;
   read: string; stop: string; placeholder: string; chars: string; clear: string;
   result: string;
   copy: string; copied: string; footer: string; enterTextFirst: string;
